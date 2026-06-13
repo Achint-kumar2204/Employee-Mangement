@@ -52,14 +52,35 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
         try {
 
-            jwtUtil.extractClaims(token);
+            String role =
+                    jwtUtil.extractRole(token);
+
+            String method =
+                    exchange.getRequest()
+                            .getMethod()
+                            .name();
+
+            System.out.println(
+                    "ROLE = " + role);
+
+            if ("POST".equals(method)
+                    && !"ADMIN".equals(role)) {
+
+                exchange.getResponse()
+                        .setStatusCode(
+                                HttpStatus.FORBIDDEN);
+
+                return exchange.getResponse()
+                        .setComplete();
+            }
 
             return chain.filter(exchange);
 
         } catch (Exception ex) {
 
             exchange.getResponse()
-                    .setStatusCode(HttpStatus.UNAUTHORIZED);
+                    .setStatusCode(
+                            HttpStatus.UNAUTHORIZED);
 
             return exchange.getResponse()
                     .setComplete();

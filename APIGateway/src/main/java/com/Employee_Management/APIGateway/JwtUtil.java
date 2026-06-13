@@ -31,4 +31,11 @@ public class JwtUtil {
                 secret.getBytes(
                         StandardCharsets.UTF_8));
     }
+
+    public String extractRole(String token) {
+
+        return extractClaims(token)
+                .get("role", String.class);
+    }
+
 }
