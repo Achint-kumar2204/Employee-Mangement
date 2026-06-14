@@ -7,10 +7,12 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @AllArgsConstructor
-public class DepartmentDTO {
+public class DepartmentDTO implements Serializable {
 
     private Long id;
 

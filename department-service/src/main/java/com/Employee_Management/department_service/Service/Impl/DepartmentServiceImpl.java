@@ -5,6 +5,7 @@ import com.Employee_Management.department_service.Entities.Department;
 import com.Employee_Management.department_service.Exception.DepartmentNotFoundException;
 import com.Employee_Management.department_service.Repositories.DepartmentRepo;
 import com.Employee_Management.department_service.Services.DepartmentService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,8 +45,12 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .toList();
     }
 
+    @Cacheable(value = "departments", key = "#id")
     @Override
     public DepartmentDTO getById(Long id) {
+
+        System.out.println("FETCHING FROM DB...");
+
         Department department =  repository.findById(id)
                 .orElseThrow(() -> new DepartmentNotFoundException("Department not found"));
 

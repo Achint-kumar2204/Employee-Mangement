@@ -10,6 +10,7 @@ import com.Employee_Management.employee_service.Exceptions.InvalidDepartmentExce
 import com.Employee_Management.employee_service.Repositories.EmployeeRepo;
 import com.Employee_Management.employee_service.Services.EmployeeService;
 import feign.FeignException;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -73,7 +74,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Cacheable(value = "employees", key = "#id")
     public EmployeeDTO getById(Long id) {
+
+        System.out.println("FETCHING FROM DB...");
 
         Employee employee =
                 repository.findById(id)
