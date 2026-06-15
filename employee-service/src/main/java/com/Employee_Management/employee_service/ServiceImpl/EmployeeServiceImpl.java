@@ -10,6 +10,7 @@ import com.Employee_Management.employee_service.Exceptions.InvalidDepartmentExce
 import com.Employee_Management.employee_service.Repositories.EmployeeRepo;
 import com.Employee_Management.employee_service.Services.EmployeeService;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -93,6 +94,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @CircuitBreaker(
+            name = "departmentService",
+            fallbackMethod = "departmentFallback"
+    )
     public EmployeeResponseDTO getEmployeeWithDepartment(Long id) {
 
         Employee employee =
@@ -104,6 +109,31 @@ public class EmployeeServiceImpl implements EmployeeService {
         DepartmentDTO department =
                 departmentClient.getDepartmentById(
                         employee.getDepartmentId());
+
+        return new EmployeeResponseDTO(
+                employee.getId(),
+                employee.getName(),
+                employee.getEmail(),
+                department
+        );
+    }
+
+    public EmployeeResponseDTO departmentFallback(
+            Long id,
+            Exception ex) {
+
+        Employee employee =
+                repository.findById(id)
+                        .orElseThrow(() ->
+                                new EmployeeNotFoundException(
+                                        "Employee not found"));
+
+        DepartmentDTO department =
+                new DepartmentDTO(
+                        0L,
+                        "Department Service Unavailable",
+                        "N/A"
+                );
 
         return new EmployeeResponseDTO(
                 employee.getId(),
