@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+
+  postgres-db:
+    image: postgres
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Achint@123
+    ports:
+      - "5433:5432"
+    volumes:
+      # This runs your script to create the 2 databases on first startup
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      # This ensures your data survives when the container stops
+      - postgres_data:/var/lib/postgresql
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  config-server:
+    image: config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+
+  eureka-server:
+    image: eureka-server
+    container_name: eureka-server
+    depends_on:
+      - config-server
+    ports:
+      - "8761:8761"
+
+  auth-service:
+    image: auth-service
+    container_name: auth-service
+    depends_on:
+      - config-server
+      - eureka-server
+      - postgres-db
+    ports:
+      - "8083:8083"
+
+  department-service:
+    image: department-service
+    container_name: department-service
+    depends_on:
+      - config-server
+      - eureka-server
+      - postgres-db
+      - redis
+    ports:
+      - "8082:8082"
+
+  employee-service:
+    image: employee-service
+    container_name: employee-service
+    depends_on:
+      - config-server
+      - eureka-server
+      - postgres-db
+      - redis
+      - department-service
+    ports:
+      - "8081:8081"
+
+  api-gateway:
+    image: api-gateway
+    container_name: api-gateway
+    depends_on:
+      - config-server
+      - eureka-server
+      - auth-service
+      - employee-service
+      - department-service
+    ports:
+      - "9090:9090"
+
+volumes:
+  postgres_data:
