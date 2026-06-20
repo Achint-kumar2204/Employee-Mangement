@@ -23,11 +23,11 @@ jobs:
 
       - name: Build Config Server
         run: mvn clean verify
-        working-directory: config-server
+        working-directory: ConfigServer
 
       - name: Build Eureka Server
         run: mvn clean verify
-        working-directory: eureka-server
+        working-directory: EurekaServer
 
       - name: Build Auth Service
         run: mvn clean verify
@@ -43,4 +43,4 @@ jobs:
 
       - name: Build API Gateway
         run: mvn clean verify
-        working-directory: api-gateway
+        working-directory: APIGateway
