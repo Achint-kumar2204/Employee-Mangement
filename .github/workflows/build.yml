@@ -44,3 +44,59 @@ jobs:
       - name: Build API Gateway
         run: mvn clean verify
         working-directory: APIGateway
+
+
+      # Docker Build and push actions
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      # Build Docker images using Docker username to publish to DockerHub
+
+      - name: Build Config Server Image
+        run: docker build -t achintkumar01/config-server:v1 .
+        working-directory: ConfigServer
+
+      - name: Build Eureka Server Image
+        run: docker build -t achintkumar01/eureka-server:v1 .
+        working-directory: EurekaServer
+
+      - name: Build Auth Service Image
+        run: docker build -t achintkumar01/auth-service:v1 .
+        working-directory: auth-service
+
+      - name: Build Department Service Image
+        run: docker build -t achintkumar01/department-service:v1 .
+        working-directory: department-service
+
+      - name: Build Employee Service Image
+        run: docker build -t achintkumar01/employee-service:v1 .
+        working-directory: employee-service
+
+      - name: Build API Gateway Image
+        run: docker build -t achintkumar01/api-gateway:v1 .
+        working-directory: APIGateway
+
+      # Push All images to DockerHub
+
+      - name: Push Config Server Image
+        run: docker push achintkumar01/config-server:v1
+
+      - name: Push Eureka Server Image
+        run: docker push achintkumar01/eureka-server:v1
+
+      - name: Push Auth Service Image
+        run: docker push achintkumar01/auth-service:v1
+
+      - name: Push Department Service Image
+        run: docker push achintkumar01/department-service:v1
+
+      - name: Push Employee Service Image
+        run: docker push achintkumar01/employee-service:v1
+
+      - name: Push API Gateway Image
+        run: docker push achintkumar01/api-gateway:v1
+
